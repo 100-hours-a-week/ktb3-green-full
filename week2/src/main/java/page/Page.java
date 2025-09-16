@@ -7,19 +7,19 @@ import java.util.Scanner;
 public abstract class Page {
 
     public void printRemainCoin(User user) {
-        System.out.println(user.getName()+"님이 보유하신 이용권은 "+user.getRemain()+"매입니다!\n");
+        System.out.println(user.getName()+"님이 보유하신 이용권은 "+user.getRemainCoin()+"매입니다!\n");
     }
 
-    public boolean exit (Scanner scan) {
+    public boolean isContinued (Scanner scan) {
         System.out.println("1) 메인으로 돌아가기 2) 종료하기");
         System.out.print("입력: ");
 
-        if (scan.nextInt() == 2) {
-            System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
+        if (scan.nextInt() == 1) {
+            System.out.println("\n");
             return true;
         }
         else {
-            System.out.print("\n");
+            System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
             return false;
         }
     }
