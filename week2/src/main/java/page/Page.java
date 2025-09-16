@@ -7,7 +7,7 @@ import java.util.Scanner;
 public abstract class Page {
 
     public void printRemainCoin(User user) {
-        System.out.println(user.name+"님이 보유하신 이용권은 "+user.getRemain()+"매입니다!\n");
+        System.out.println(user.getName()+"님이 보유하신 이용권은 "+user.getRemain()+"매입니다!\n");
     }
 
     public boolean exit (Scanner scan) {
