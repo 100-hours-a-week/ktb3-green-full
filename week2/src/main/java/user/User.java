@@ -1,12 +1,16 @@
 package user;
 
 public class User {
-    public String name;
+    private final String name;
     private int remainCoin;
 
     public User(String name) {
         this.name = name;
         this.remainCoin = 1; //기본 이용 횟수
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     //getter
