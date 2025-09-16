@@ -5,6 +5,12 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### remove tracking
+build.gradle
+gradlew
+gradlew.bat
+settings.gradle
+
 ### IntelliJ IDEA ###
 .idea/
 .idea/modules.xml
