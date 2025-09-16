@@ -28,7 +28,8 @@ public class Home extends Page {
         System.out.println("안녕하세요! "+name+"님 :)\n\n");
         return name;
     }
-    
+
+    //return 값이 false 인 경우 종료
     public boolean start(Scanner scan, User user) {
         printTitle();
         printRemainCoin(user);
@@ -37,20 +38,20 @@ public class Home extends Page {
         System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
 
         if (startNum == 1) {
-            if (user.getRemain() < 1) {
+            if (user.getRemainCoin() < 1) {
                 System.out.println("이용권이 부족합니다!\n이용권 구입 후 다시 이용해주세요.");
                 System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
             }
             else {
                 Fortune fortune = new Fortune();
                 fortune.start(scan, user);
-                if(exit(scan)) return false;
+                return isContinued(scan);
             }
         }
         else if (startNum == 2) {
             Charge charge = new Charge();
             charge.start(scan, user);
-            if(exit(scan)) return false;
+            return isContinued(scan);
         }
         else if (startNum == 3) {
             return false;
