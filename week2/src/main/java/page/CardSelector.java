@@ -1,9 +1,7 @@
 package page;
 
-import card.AcademicCard;
-import card.LoveCard;
-import card.MoneyCard;
-import card.TotalCard;
+import card.*;
+import factory.CardFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,27 +64,9 @@ public class CardSelector extends Fortune {
         int isRandom = receiveUserInput(selectionOptions, scan);
         System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
         cardNum = selectCard(isRandom == 1, scan);
+        CardFactory cardFactory = new CardFactory();
 
-        switch (this.category) {
-            case 1:
-                MoneyCard moneyCard = new MoneyCard(cardNum);
-                moneyCard.result();
-                break;
-            case 2:
-                LoveCard loveCard = new LoveCard(cardNum);
-                loveCard.result();
-                break;
-            case 3:
-                AcademicCard academicCard = new AcademicCard(cardNum);
-                academicCard.result();
-                break;
-            case 4:
-                TotalCard totalCard = new TotalCard(cardNum);
-                totalCard.result();
-                break;
-            default:
-                System.out.println("올바른 번호를 입력해주세요!");
-                break;
-        }
+        Card selectedCard = cardFactory.getCard(this.category, cardNum);
+        selectedCard.result();
     }
 }
