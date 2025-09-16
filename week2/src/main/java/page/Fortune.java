@@ -19,10 +19,6 @@ public class Fortune extends Page {
         categoryOptions.add("총운⭐️");
     }
 
-    void subtractCoin(User user) {
-        user.setRemain(-1);
-    }
-
     public void start(Scanner scan, User user) {
         System.out.println(fortuneTitle);
         System.out.print("\n");
@@ -32,7 +28,7 @@ public class Fortune extends Page {
         CardSelector cardSelector = new CardSelector(categoryNum);
         cardSelector.start(scan);
 
-        subtractCoin(user); //이용권 1 차감
+        user.useCoin();
     }
 
 }
