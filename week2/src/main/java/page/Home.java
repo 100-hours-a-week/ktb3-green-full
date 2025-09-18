@@ -9,6 +9,11 @@ public class Home extends Page {
     int startNum;
     List<String> startOptions;
 
+    private static final int START = 1;
+    private static final int CHARGE = 2;
+    private static final int EXIT = 3;
+    private static final int MINIMUM_COIN = 1;
+
     public Home() {
         startOptions = new ArrayList<>();
         startOptions.add("시작하기");
@@ -37,8 +42,8 @@ public class Home extends Page {
         startNum = receiveUserInput(startOptions, scan);
         System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
 
-        if (startNum == 1) {
-            if (user.getRemainCoin() < 1) {
+        if (startNum == START) {
+            if (user.getRemainCoin() < MINIMUM_COIN) {
                 System.out.println("이용권이 부족합니다!\n이용권 구입 후 다시 이용해주세요.");
                 System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
             }
@@ -48,12 +53,12 @@ public class Home extends Page {
                 return isContinued(scan);
             }
         }
-        else if (startNum == 2) {
+        else if (startNum == CHARGE) {
             Charge charge = new Charge();
             charge.start(scan, user);
             return isContinued(scan);
         }
-        else if (startNum == 3) {
+        else if (startNum == EXIT) {
             return false;
         }
         else {
