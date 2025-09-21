@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Home extends Page {
-    int startNum;
-    List<String> startOptions;
 
     private static final int START = 1;
     private static final int CHARGE = 2;
     private static final int EXIT = 3;
     private static final int MINIMUM_COIN = 1;
+
+    List<String> startOptions;
 
     public Home() {
         startOptions = new ArrayList<>();
@@ -39,13 +39,13 @@ public class Home extends Page {
         printTitle();
         printRemainCoin(user);
         
-        startNum = receiveUserInput(startOptions, scan);
-        System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
+        int startNum = receiveUserInput(startOptions, scan);
+        System.out.println(LINE);
 
         if (startNum == START) {
             if (user.getRemainCoin() < MINIMUM_COIN) {
                 System.out.println("이용권이 부족합니다!\n이용권 구입 후 다시 이용해주세요.");
-                System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
+                System.out.println(LINE);
             }
             else {
                 Fortune fortune = new Fortune();
@@ -64,6 +64,7 @@ public class Home extends Page {
         else {
             System.out.println("올바른 번호를 입력해주세요!");
         }
+
         return true;
     }
 }
