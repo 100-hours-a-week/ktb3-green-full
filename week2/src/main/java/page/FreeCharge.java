@@ -1,20 +1,19 @@
 package page;
-import timer.CountDownTimer;
-import timer.TestTimer;
+import timer.CallableTimer;
 import user.User;
 
 import java.util.Scanner;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 
-public class FreeCoin extends Charge {
+public class FreeCharge extends Charge {
 
     public static volatile boolean isSkip;
     public static volatile boolean endAd;
+    private final static int TOTAL_ADTIME = 15;
     private final static int REQUIRED_ADTIME = 5; //광고 필수 시청 시간
 
-    public FreeCoin() {
+    public FreeCharge() {
         isSkip = false;
         endAd = false;
     }
@@ -22,10 +21,10 @@ public class FreeCoin extends Charge {
     public void startCharge(Scanner scan, User user) {
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Callable<Boolean> requiredAdTimerThread = new TestTimer(REQUIRED_ADTIME);
+        Callable<Boolean> requiredAdTimerThread = new CallableTimer(REQUIRED_ADTIME);
         Future<Boolean> endRequiredAdTimer = executorService.submit(requiredAdTimerThread);
 
-        Thread showAdThread = new Thread(new Advertisement());
+        Thread showAdThread = new Thread(new Advertisement(TOTAL_ADTIME));
         showAdThread.start();
 
         while (true) {
