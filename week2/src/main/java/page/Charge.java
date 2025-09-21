@@ -8,46 +8,34 @@ import java.util.Scanner;
 
 public class Charge extends Page {
 
-    static String chargeTitle = "충전하실 코인의 개수에 맞게 번호를 입력해주세요!";
-    int chargeNum;
+    private final static String CHARGE_TITLE = "코인을 충전하시고 알쓸오운을 더 많이 즐겨보세요 💰";
+    private final static int PAID_OPTION = 1;
+    private final static int FREE_OPTION = 2;
+
     List<String> chargeOptions;
+
     public Charge() {
         chargeOptions = new ArrayList<>();
-        chargeOptions.add("1 코인 = 500원");
-        chargeOptions.add("3 코인 = 1450원");
-        chargeOptions.add("5 코인 = 2300원");
-        chargeOptions.add("10 코인 = 4500원");
+        chargeOptions.add("유료 코인 충전하기");
+        chargeOptions.add("광고 시청하고 무료 코인 얻기");
     }
 
-    @Override
-    public int receiveUserInput (List<String> options, Scanner scan) {
-        for (int i = 0; i < options.size(); i++) {
-            System.out.print((i+1)+") "+options.get(i) + "\n");
-        }
-
-        System.out.print("입력: ");
-        return scan.nextInt();
-    }
-
-    private void chargeCoin(int chargeNum, User user) {
-        int change;
-        switch (chargeNum) {
-            case 1: change = 1; break;
-            case 2: change = 3; break;
-            case 3: change = 5; break;
-            case 4: change = 10; break;
-            default: change = 0; break;
-        }
-        user.setRemain(change);
-        System.out.println("정상적으로 충전이 완료되었습니다!");
-        printRemainCoin(user);
+    public void startCharge(Scanner scan, User user) {
+        System.out.println("올바른 번호를 입력해주세요!");
     }
 
     public void start(Scanner scan, User user) {
-        System.out.println(chargeTitle);
-        System.out.print("\n");
-        chargeNum = receiveUserInput(chargeOptions, scan);
-        System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
-        chargeCoin(chargeNum, user);
+        System.out.println(CHARGE_TITLE+"\n");
+        Charge charge = switch (receiveUserInput(chargeOptions, scan)) {
+            case PAID_OPTION -> new PaidCharge();
+            case FREE_OPTION -> new FreeCharge();
+            default -> new Charge();
+        };
+        System.out.println(LINE);
+
+        charge.startCharge(scan, user);
+
+        System.out.println("\n정상적으로 충전이 완료되었습니다!");
+        printRemainCoin(user);
     }
 }
