@@ -8,8 +8,7 @@ import java.util.Scanner;
 
 public class Fortune extends Page {
 
-    static String fortuneTitle = "확인하고 싶으신 운세의 종류를 선택해주세요!";
-    int categoryNum;
+    private final static String FORTUNE_TITLE = "확인하고 싶으신 운세의 종류를 선택해주세요!";
     List<String> categoryOptions;
     public Fortune() {
         categoryOptions = new ArrayList<>();
@@ -20,10 +19,9 @@ public class Fortune extends Page {
     }
 
     public void start(Scanner scan, User user) {
-        System.out.println(fortuneTitle);
-        System.out.print("\n");
-        categoryNum = receiveUserInput(categoryOptions, scan);
-        System.out.println("\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n");
+        System.out.println(FORTUNE_TITLE+"\n");
+        int categoryNum = receiveUserInput(categoryOptions, scan);
+        System.out.println(LINE);
 
         CardSelector cardSelector = new CardSelector(categoryNum);
         cardSelector.start(scan);
