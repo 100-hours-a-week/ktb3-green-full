@@ -5,3 +5,5 @@
 ### 주차별 과제
 - week1: CLI 프로그램 제작 (동기)
 - week2: CLI 프로그램 제작 + 스레드 (비동기)
+- week3: REST API 설계
+- week4: REST API 개발
