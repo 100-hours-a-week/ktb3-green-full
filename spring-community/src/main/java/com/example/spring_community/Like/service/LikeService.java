@@ -1,0 +1,38 @@
+package com.example.spring_community.Like.service;
+
+import com.example.spring_community.Post.domain.PostEntity;
+import com.example.spring_community.Exception.CustomException;
+import com.example.spring_community.Exception.ErrorCode;
+import com.example.spring_community.Like.repository.LikeRepository;
+import com.example.spring_community.Post.repository.PostRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class LikeService {
+    private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
+
+    public LikeService(LikeRepository likeRepository, PostRepository postRepository) {
+        this.likeRepository = likeRepository;
+        this.postRepository = postRepository;
+    }
+
+    public PostEntity addLikes(Long postId, Long userId) {
+        likeRepository.addLikes(postId, userId);
+        int likeCounts = likeRepository.countLikes(postId);
+        postRepository.updateLikes(postId, likeCounts);
+        PostEntity post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        return post;
+    }
+
+    public PostEntity deleteLikes(Long postId, Long userId) {
+        likeRepository.deleteLikes(postId, userId);
+        int likeCounts = likeRepository.countLikes(postId);
+        postRepository.updateLikes(postId, likeCounts);
+        PostEntity post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        return post;
+    }
+
+}
