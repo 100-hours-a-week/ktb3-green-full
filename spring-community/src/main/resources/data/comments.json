@@ -58,14 +58,4 @@
   "content" : "좋은 글 감사합니다! - 6",
   "createdAt" : "2025-10-14T00:35:00Z",
   "updatedAt" : "2025-10-14T00:35:00Z"
-}, {
-  "commentId" : 13,
-  "postId" : 100,
-  "author" : {
-    "userId" : 6,
-    "nickname" : "green"
-  },
-  "content" : "아무말 감사합니다!",
-  "createdAt" : "2025-10-14T15:53:51.634682Z",
-  "updatedAt" : "2025-10-14T15:53:51.634682Z"
-} ]
+}]
