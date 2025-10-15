@@ -30,12 +30,6 @@ public class PostService {
         return entityToDetailDto(postEntity);
     }
 
-    public List<PostDto> readPostList() {
-        List<PostEntity> postEntityList = postRepository.findAllPosts();
-        return postEntityList.stream()
-                .map(post -> entityToDto(post))
-                .toList();
-    }
     public PagePostDto<PostDto> readPostPage(int page, int size) {
         List<PostEntity> postPageList = postRepository.findPostPage(page, size);
         int totalPosts = postRepository.countAllPosts();
