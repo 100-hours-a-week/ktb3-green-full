@@ -42,16 +42,6 @@ public class AuthService {
                 .build();
     }
 
-    public void withdrawUser(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if (!userEntity.getActive()) {
-            throw new CustomException(ErrorCode.DUPLICATED_WITHDRAW);
-        }
-        UserEntity updateUserActiveEntity = userEntity.toBuilder().active(false).build();
-        userRepository.updateUserInfo(updateUserActiveEntity);
-    }
-
     public TokenDto reissueAccessToken(Long userId, RefreshTokenDto refreshTokenDto) {
         if(!jwtUtils.verifyToken(refreshTokenDto.getRefreshToken())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_TOKEN);

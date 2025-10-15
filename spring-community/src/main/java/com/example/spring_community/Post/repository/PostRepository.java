@@ -52,10 +52,6 @@ public class PostRepository {
         return postDatabase.size();
     }
 
-    public List<PostEntity> findAllPosts() {
-        return List.copyOf(this.postDatabase.values());
-    }
-
     public Optional<PostEntity> findById(Long postId) {
         return Optional.ofNullable(postDatabase.get(postId));
     }

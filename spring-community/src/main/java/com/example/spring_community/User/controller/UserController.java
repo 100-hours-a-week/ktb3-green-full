@@ -31,6 +31,18 @@ public class UserController {
                 .body(DataResponseDto.of(HttpStatus.CREATED, "CREATED", "회원가입에 성공했습니다", createdUser));
     }
 
+    //회원탈퇴
+    @PatchMapping("/active")
+    public ResponseEntity<ResponseDto> withdraw(HttpServletRequest request) {
+        AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
+        if (authUser == null) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+        userService.withdrawUser(authUser.getUserId());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.of(HttpStatus.OK, "WITHDRAW_USER_SUCCESS", "정상적으로 탈퇴 처리 되었습니다."));
+    }
+
     //회원 프로필 수정
     @PatchMapping("/profile")
     public ResponseEntity<DataResponseDto<CreateUserDto>> updateUserProfile(HttpServletRequest request, @RequestBody UpdateUserProfileDto updateUserProfileDto) {
@@ -47,9 +59,7 @@ public class UserController {
     @PatchMapping("/password")
     public ResponseEntity<Void> updateUserPw(HttpServletRequest request, @RequestBody UpdateUserPwDto updateUserPwDto) {
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        if (authUser == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
+        if (authUser == null) throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
         userService.updateUserPw(authUser.getUserId(), updateUserPwDto);
         return ResponseEntity.noContent().build();
     }

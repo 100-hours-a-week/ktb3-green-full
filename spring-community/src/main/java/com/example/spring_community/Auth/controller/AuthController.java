@@ -50,18 +50,6 @@ public class AuthController {
                 .body(ResponseDto.of(HttpStatus.OK, "LOGOUT_SUCCESS", "정상적으로 로그아웃되었습니다."));
     }
 
-    //회원탈퇴
-    @PatchMapping("/active")
-    public ResponseEntity<ResponseDto> withdraw(HttpServletRequest request) {
-        AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        if (authUser == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
-        authService.withdrawUser(authUser.getUserId());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.of(HttpStatus.OK, "WITHDRAW_USER_SUCCESS", "정상적으로 탈퇴 처리 되었습니다."));
-    }
-
     //토큰 재발급
     @PostMapping("/token/new")
     public ResponseEntity<DataResponseDto<TokenDto>> refresh(HttpServletRequest request, @RequestBody RefreshTokenDto refreshTokenDto) {

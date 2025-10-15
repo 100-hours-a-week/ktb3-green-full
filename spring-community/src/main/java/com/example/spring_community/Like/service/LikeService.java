@@ -18,6 +18,7 @@ public class LikeService {
     }
 
     public PostEntity addLikes(Long postId, Long userId) {
+        isValidPostId(postId);
         likeRepository.addLikes(postId, userId);
         int likeCounts = likeRepository.countLikes(postId);
         postRepository.updateLikes(postId, likeCounts);
@@ -27,12 +28,22 @@ public class LikeService {
     }
 
     public PostEntity deleteLikes(Long postId, Long userId) {
+        isValidPostId(postId);
         likeRepository.deleteLikes(postId, userId);
         int likeCounts = likeRepository.countLikes(postId);
         postRepository.updateLikes(postId, likeCounts);
         PostEntity post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
         return post;
+    }
+
+    public boolean isLiked(Long postId, Long userId) {
+        isValidPostId(postId);
+        return likeRepository.isLiked(postId, userId);
+    }
+
+    public void isValidPostId(Long postId) {
+        postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
 }

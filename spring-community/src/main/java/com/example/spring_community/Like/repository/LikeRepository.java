@@ -69,6 +69,14 @@ public class LikeRepository {
     }
 
     public Integer countLikes(Long postId) {
+        Set<Long> likeSet = likeDatabase.get(postId);
+        if (likeSet == null) return 0;
         return likeDatabase.get(postId).size();
+    }
+
+    public boolean isLiked(Long postId, Long userId) {
+        Set<Long> likeSet = likeDatabase.get(postId);
+        if (likeSet == null) return false;
+        return likeSet.contains(userId);
     }
  }

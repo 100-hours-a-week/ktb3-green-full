@@ -75,5 +75,15 @@ public class UserService {
         return createdUserDto;
     }
 
+    public void withdrawUser(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if (!userEntity.getActive()) {
+            throw new CustomException(ErrorCode.DUPLICATED_WITHDRAW);
+        }
+        UserEntity updateUserActiveEntity = userEntity.toBuilder().active(false).build();
+        userRepository.updateUserInfo(updateUserActiveEntity);
+    }
+
 
 }
