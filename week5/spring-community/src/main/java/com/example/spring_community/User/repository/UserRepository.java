@@ -1,6 +1,7 @@
 package com.example.spring_community.User.repository;
 
 import com.example.spring_community.Auth.dto.LoginDto;
+import com.example.spring_community.Storage.JsonRepository;
 import com.example.spring_community.User.domain.UserEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
@@ -14,38 +15,26 @@ import java.nio.file.*;
 import java.util.*;
 
 @Repository
-public class UserRepository {
+public class UserRepository extends JsonRepository<UserEntity> {
     private static final Path USER_JSON_PATH = Paths.get("src/main/resources/data/users.json");
-    private final ObjectMapper objectMapper;
     private final Map<Long, UserEntity> userDatabase = new LinkedHashMap<>();
     private long userId;
 
     public UserRepository(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        super(objectMapper);
     }
 
     @PostConstruct
     public void loadFromJson() {
-        try(InputStream in = Files.newInputStream(USER_JSON_PATH)) {
-            List<UserEntity> userEntityList = objectMapper.readValue(in, new TypeReference<List<UserEntity>>() {});
-            userDatabase.clear();
-            for (UserEntity user: userEntityList) {
-                userDatabase.put(user.getUserId(), user);
-            }
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
-        }
+        List<UserEntity> userEntityList = loadListFromJson(USER_JSON_PATH, new TypeReference<List<UserEntity>>() {});
+        userDatabase.clear();
+        for (UserEntity user: userEntityList) userDatabase.put(user.getUserId(), user);
         this.userId = userDatabase.keySet().stream().mapToLong(Long::longValue).max().orElse(0L);
     }
 
     private void saveToJson() {
-        try {
-            Path temp = Files.createTempFile(USER_JSON_PATH.getParent(), "users-", ".json");
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(temp.toFile(), new ArrayList<>(userDatabase.values()));
-            Files.move(temp, USER_JSON_PATH, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
-        }
+        List<UserEntity> userEntityList = new ArrayList<>(userDatabase.values());
+        saveListToJson(USER_JSON_PATH, "users-", userEntityList);
     }
 
     public UserEntity createNewUser(UserEntity userEntity) {

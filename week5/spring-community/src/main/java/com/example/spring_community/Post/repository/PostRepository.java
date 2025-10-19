@@ -3,6 +3,7 @@ package com.example.spring_community.Post.repository;
 import com.example.spring_community.Post.domain.PostEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
+import com.example.spring_community.Storage.JsonRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -14,38 +15,26 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class PostRepository {
+public class PostRepository extends JsonRepository<PostEntity> {
     private static final Path POST_JSON_PATH = Paths.get("src/main/resources/data/posts.json");
-    private final ObjectMapper objectMapper;
     private final Map<Long, PostEntity> postDatabase = new ConcurrentHashMap<>();
     private Long postId;
 
     public PostRepository(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        super(objectMapper);
     }
 
     @PostConstruct
     public void loadFromJson() {
-        try(InputStream in = Files.newInputStream(POST_JSON_PATH)) {
-            List<PostEntity> postEntityList = objectMapper.readValue(in, new TypeReference<List<PostEntity>>() {});
-            postDatabase.clear();
-            for (PostEntity post: postEntityList) {
-                postDatabase.put(post.getPostId(), post);
-            }
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
-        }
+        List<PostEntity> postEntityList = loadListFromJson(POST_JSON_PATH, new TypeReference<List<PostEntity>>() {});
+        postDatabase.clear();
+        for (PostEntity post: postEntityList) postDatabase.put(post.getPostId(), post);
         this.postId = postDatabase.keySet().stream().mapToLong(Long::longValue).max().orElse(0L);
     }
 
     private void saveToJson() {
-        try {
-            Path temp = Files.createTempFile(POST_JSON_PATH.getParent(), "posts-", ".json");
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(temp.toFile(), new ArrayList<>(postDatabase.values()));
-            Files.move(temp, POST_JSON_PATH, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
-        }
+        List<PostEntity> postEntityList = new ArrayList<>(postDatabase.values());
+        saveListToJson(POST_JSON_PATH, "posts", postEntityList);
     }
 
     public synchronized int countAllPosts() {
