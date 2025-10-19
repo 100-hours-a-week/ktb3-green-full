@@ -56,6 +56,10 @@ public class UserService {
     }
 
     public CreateUserDto signup(CreateUserDto createUserDto) {
+        if (!createUserDto.getPassword().equals(createUserDto.getCheckPassword())) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
+
         if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_USER);
         }
