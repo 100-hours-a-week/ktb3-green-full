@@ -1,5 +1,6 @@
 package com.example.spring_community.Like.service;
 
+import com.example.spring_community.Like.dto.LikeDto;
 import com.example.spring_community.Post.domain.PostEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
@@ -17,24 +18,24 @@ public class LikeService {
         this.postRepository = postRepository;
     }
 
-    public PostEntity addLikes(Long postId, Long userId) {
+    public LikeDto addLikes(Long postId, Long userId) {
         isValidPostId(postId);
         likeRepository.addLikes(postId, userId);
         int likeCounts = likeRepository.countLikes(postId);
         postRepository.updateLikes(postId, likeCounts);
         PostEntity post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        return post;
+        return postEntityToLikeDto(post);
     }
 
-    public PostEntity deleteLikes(Long postId, Long userId) {
+    public LikeDto deleteLikes(Long postId, Long userId) {
         isValidPostId(postId);
         likeRepository.deleteLikes(postId, userId);
         int likeCounts = likeRepository.countLikes(postId);
         postRepository.updateLikes(postId, likeCounts);
         PostEntity post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        return post;
+        return postEntityToLikeDto(post);
     }
 
     public boolean isLiked(Long postId, Long userId) {
@@ -44,6 +45,11 @@ public class LikeService {
 
     public void isValidPostId(Long postId) {
         postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+    }
+
+    private LikeDto postEntityToLikeDto(PostEntity postEntity) {
+        return LikeDto.builder().postId(postEntity.getPostId()).title(postEntity.getTitle())
+                .likes(postEntity.getLikes()).build();
     }
 
 }
