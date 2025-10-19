@@ -22,11 +22,11 @@ public class AuthService {
     }
     public TokenDto login(LoginDto loginDto) {
         if (loginDto == null ||
-                !StringUtils.hasText(loginDto.email()) ||
-                !StringUtils.hasText(loginDto.password())) {
+                !StringUtils.hasText(loginDto.getEmail()) ||
+                !StringUtils.hasText(loginDto.getPassword())) {
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
-        UserEntity userEntity = userRepository.findByEmail(loginDto.email())
+        UserEntity userEntity = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(!userRepository.isValidUser(loginDto)) {
