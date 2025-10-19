@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "파라미터 값이 비어있거나 올바르지 않습니다."), //400
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "INVALID_PASSWORD", "비밀번호가 다릅니다."), //400
 
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED_USER", "비밀번호가 틀렸습니다."), //401
     UNAUTHORIZED_TOKEN(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED_TOKEN", "유효하지 않은 토큰입니다."), //401
