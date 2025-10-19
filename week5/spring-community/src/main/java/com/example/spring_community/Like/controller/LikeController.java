@@ -37,11 +37,7 @@ public class LikeController {
     @PostMapping
     public ResponseEntity<DataResponseDto<LikeDto>> addLikes(HttpServletRequest request, @PathVariable Long postId) {
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        PostEntity postEntity = likeService.addLikes(postId, authUser.getUserId());
-        LikeDto likeDto = LikeDto.builder()
-                .postId(postEntity.getPostId()).title(postEntity.getTitle())
-                .likes(postEntity.getLikes())
-                .build();
+        LikeDto likeDto = likeService.addLikes(postId, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(DataResponseDto.of(HttpStatus.CREATED, "POST_LIKES_SUCCESS", "좋아요를 성공적으로 눌렀습니다.", likeDto));
     }
@@ -50,11 +46,7 @@ public class LikeController {
     @DeleteMapping
     public ResponseEntity<DataResponseDto<LikeDto>> deleteLikes(HttpServletRequest request, @PathVariable Long postId) {
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        PostEntity postEntity = likeService.deleteLikes(postId, authUser.getUserId());
-        LikeDto likeDto = LikeDto.builder()
-                .postId(postEntity.getPostId()).title(postEntity.getTitle())
-                .likes(postEntity.getLikes())
-                .build();
+        LikeDto likeDto = likeService.deleteLikes(postId, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponseDto.of(HttpStatus.OK, "DELETE_LIKES_SUCCESS", "좋아요를 성공적으로 취소했습니다.", likeDto));
     }
