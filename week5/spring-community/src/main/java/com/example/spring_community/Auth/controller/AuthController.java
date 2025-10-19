@@ -12,6 +12,7 @@ import com.example.spring_community.Auth.jwt.JwtUtils;
 import com.example.spring_community.Auth.service.AuthService;
 import com.example.spring_community.Auth.service.BlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class AuthController {
 
     //로그인
     @PostMapping("/token")
-    public ResponseEntity<DataResponseDto<TokenDto>> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<DataResponseDto<TokenDto>> login(@RequestBody @Valid LoginDto loginDto) {
         TokenDto tokenDto = authService.login(loginDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponseDto.of(HttpStatus.OK, "LOGIN_SUCCESS", "로그인에 성공했습니다.", tokenDto));
