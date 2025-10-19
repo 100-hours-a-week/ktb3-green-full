@@ -10,6 +10,7 @@ import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
 import com.example.spring_community.User.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserController {
 
     //회원가입
     @PostMapping("/new")
-    public ResponseEntity<DataResponseDto<CreateUserDto>> signup(@RequestBody CreateUserDto createUserDto) {
+    public ResponseEntity<DataResponseDto<CreateUserDto>> signup(@RequestBody @Valid CreateUserDto createUserDto) {
         CreateUserDto createdUser = userService.signup(createUserDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(DataResponseDto.of(HttpStatus.CREATED, "CREATED", "회원가입에 성공했습니다", createdUser));
