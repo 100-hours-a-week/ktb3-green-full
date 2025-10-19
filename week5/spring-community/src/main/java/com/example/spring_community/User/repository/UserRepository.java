@@ -72,9 +72,9 @@ public class UserRepository {
     }
 
     public boolean isValidUser(LoginDto loginDto) {
-        UserEntity userEntity = findByEmail(loginDto.email())
+        UserEntity userEntity = findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if (!userEntity.getPassword().equals(loginDto.password()) || !userEntity.getActive()) {
+        if (!userEntity.getPassword().equals(loginDto.getPassword()) || !userEntity.getActive()) {
             return false;
         }
         return true;
