@@ -35,8 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField()+": "+error.getField()).collect(Collectors.joining(", "));
+        String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         ErrorResponseDto errorDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
