@@ -3,6 +3,7 @@ package com.example.spring_community.Comment.repository;
 import com.example.spring_community.Comment.domain.CommentEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
+import com.example.spring_community.Storage.JsonRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -13,38 +14,26 @@ import java.nio.file.*;
 import java.util.*;
 
 @Repository
-public class CommentRepository {
+public class CommentRepository extends JsonRepository<CommentEntity> {
     private static final Path COMMENT_JSON_PATH = Paths.get("src/main/resources/data/comments.json");
-    private final ObjectMapper objectMapper;
     private final Map<Long, CommentEntity> commentDatabase = new LinkedHashMap<>();
     private long commentId;
 
     public CommentRepository(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        super(objectMapper);
     }
 
     @PostConstruct
     public void loadFromJson() {
-        try(InputStream in = Files.newInputStream(COMMENT_JSON_PATH)) {
-            List<CommentEntity> commentEntityList = objectMapper.readValue(in, new TypeReference<List<CommentEntity>>() {});
-            commentDatabase.clear();
-            for (CommentEntity comment: commentEntityList) {
-                commentDatabase.put(comment.getPostId(), comment);
-            }
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
-        }
+        List<CommentEntity> commentEntityList = loadListFromJson(COMMENT_JSON_PATH, new TypeReference<List<CommentEntity>>() {});
+        commentDatabase.clear();
+        for (CommentEntity comment: commentEntityList) commentDatabase.put(comment.getPostId(), comment);
         this.commentId = commentDatabase.keySet().stream().mapToLong(Long::longValue).max().orElse(0L);
     }
 
     private void saveToJson() {
-        try {
-            Path temp = Files.createTempFile(COMMENT_JSON_PATH.getParent(), "comments-", ".json");
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(temp.toFile(), new ArrayList<>(commentDatabase.values()));
-            Files.move(temp, COMMENT_JSON_PATH, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
-        }
+        List<CommentEntity> commentEntityList = new ArrayList<>(commentDatabase.values());
+        saveListToJson(COMMENT_JSON_PATH, "comments", commentEntityList);
     }
 
     public List<CommentEntity> findAllComments(Long postId) {
