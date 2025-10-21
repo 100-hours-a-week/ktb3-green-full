@@ -1,11 +1,6 @@
 package com.example.spring_community.Exception;
 
-import com.example.spring_community.Auth.controller.AuthController;
-import com.example.spring_community.Comment.controller.CommentController;
 import com.example.spring_community.Exception.dto.ErrorResponseDto;
-import com.example.spring_community.Like.controller.LikeController;
-import com.example.spring_community.Post.controller.PostController;
-import com.example.spring_community.User.controller.UserController;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -15,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.stream.Collectors;
 
 @Hidden
 @RestControllerAdvice(basePackages = "com.example.spring_community")

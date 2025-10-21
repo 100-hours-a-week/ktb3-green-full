@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class LikeDto {
+
     private final Long postId;
     private final String title;
     private final int likes;

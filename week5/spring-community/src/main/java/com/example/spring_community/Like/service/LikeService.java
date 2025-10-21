@@ -5,8 +5,6 @@ import com.example.spring_community.Like.repository.LikeRepository;
 import com.example.spring_community.Post.domain.PostEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
-import com.example.spring_community.Like.repository.LikeJsonRepository;
-import com.example.spring_community.Post.repository.PostJsonRepository;
 import com.example.spring_community.Post.repository.PostRepository;
 import org.springframework.stereotype.Service;
 

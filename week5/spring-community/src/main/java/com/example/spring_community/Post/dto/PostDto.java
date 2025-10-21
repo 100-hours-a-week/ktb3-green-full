@@ -3,7 +3,6 @@ package com.example.spring_community.Post.dto;
 import com.example.spring_community.User.domain.Author;
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.Instant;
 
 @Getter

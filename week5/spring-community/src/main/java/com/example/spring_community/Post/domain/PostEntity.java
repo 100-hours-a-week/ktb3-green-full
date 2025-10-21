@@ -4,7 +4,6 @@ import com.example.spring_community.User.domain.Author;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.Instant;
 import java.util.Comparator;
 

@@ -2,7 +2,6 @@ package com.example.spring_community.Post.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-
 import java.util.List;
 
 @Getter

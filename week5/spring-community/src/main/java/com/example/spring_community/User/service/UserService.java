@@ -6,7 +6,6 @@ import com.example.spring_community.User.dto.CreateUserDto;
 import com.example.spring_community.User.domain.UserEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
-import com.example.spring_community.User.repository.UserJsonRepository;
 import com.example.spring_community.User.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

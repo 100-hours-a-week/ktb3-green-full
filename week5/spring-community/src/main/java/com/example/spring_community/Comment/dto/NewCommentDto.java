@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 public class NewCommentDto {
-    String content;
+
+    private String content;
 
     @Builder(toBuilder = true)
     public NewCommentDto(String content) {
