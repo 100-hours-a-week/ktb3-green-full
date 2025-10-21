@@ -8,6 +8,8 @@ import com.example.spring_community.Exception.dto.ResponseDto;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
 import com.example.spring_community.Comment.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Tag(name="Comment API", description = "Comment 리소스에 관한 API 입니다.")
 @RequestMapping("/posts/{postId}/comments")
 public class CommentController {
     private final CommentService commentService;
@@ -24,8 +27,8 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    //댓글 목록 조회
     @GetMapping
+    @Operation(summary = "댓글 목록 조회", description = "postId에 해당하는 게시글에 대한 댓글 목록을 조회합니다.")
     public ResponseEntity<DataResponseDto<List<CommentDto>>> loadCommentList(@PathVariable Long postId) {
         commentService.isValidPost(postId);
         List<CommentDto> commentList = commentService.readCommentList(postId);
@@ -33,8 +36,8 @@ public class CommentController {
                 .body(DataResponseDto.of(HttpStatus.OK, "READ_COMMNETLIST_SUCCESS", "댓글 목록 조회에 성공했습니다.", commentList));
     }
 
-    //댓글 생성
     @PostMapping
+    @Operation(summary = "댓글 생성", description = "postId에 해당하는 게시글에 대한 댓글을 생성합니다.")
     public ResponseEntity<DataResponseDto<CommentDto>> createComment(HttpServletRequest request, @PathVariable Long postId, @RequestBody NewCommentDto newCommentDto) {
         commentService.isValidPost(postId);
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
@@ -46,8 +49,8 @@ public class CommentController {
                 .body(DataResponseDto.of(HttpStatus.CREATED, "CREATE_COMMENT_SUCCESS", "성공적으로 댓글을 업로드했습니다.", newComment));
     }
 
-    //댓글 수정
     @PatchMapping("/{commentId}")
+    @Operation(summary = "댓글 수정", description = "postId에 해당하는 게시글에 대한 commentId의 댓글을 수정합니다.")
     public ResponseEntity<DataResponseDto<CommentDto>> updatePost(HttpServletRequest request, @PathVariable long postId,@PathVariable long commentId, @RequestBody NewCommentDto updateCommentDto) {
         commentService.isValidPost(postId);
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
@@ -59,8 +62,8 @@ public class CommentController {
                 .body(DataResponseDto.of(HttpStatus.OK, "UPDATE_COMMENT_SUCCESS", "성공적으로 댓글을 수정했습니다.", updatedComment));
     }
 
-    //댓글 삭제
     @DeleteMapping("/{commentId}")
+    @Operation(summary = "댓글 삭제", description = "postId에 해당하는 게시글에 대한 commentId의 댓글을 삭제합니다.")
     public ResponseEntity<ResponseDto> deletePost(HttpServletRequest request, @PathVariable long postId, @PathVariable long commentId) {
         commentService.isValidPost(postId);
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");

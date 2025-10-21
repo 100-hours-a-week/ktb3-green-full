@@ -47,4 +47,32 @@
   "nickname" : "cho",
   "profileImg" : "https://example.com/images/cho.png",
   "active" : true
+}, {
+  "userId" : 8,
+  "email" : "test@gmail.com",
+  "password" : "testPW1234*",
+  "nickname" : "testuser",
+  "profileImg" : "https://example.com/images/test.png",
+  "active" : true
+}, {
+  "userId" : 9,
+  "email" : "test123@gmail.com",
+  "password" : "testPW123456*",
+  "nickname" : "test123",
+  "profileImg" : "https://example.com/images/test123.png",
+  "active" : true
+}, {
+  "userId" : 10,
+  "email" : "test123456@gmail.com",
+  "password" : "testPW123456*",
+  "nickname" : "ttt",
+  "profileImg" : "https://example.com/images/test123.png",
+  "active" : true
+}, {
+  "userId" : 11,
+  "email" : "ktb@gmail.com",
+  "password" : "KTBktb1234*",
+  "nickname" : "KTBuser",
+  "profileImg" : "https://example.com/images/ktb.png",
+  "active" : true
 } ]

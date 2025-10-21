@@ -3,14 +3,14 @@ package com.example.spring_community.Comment.service;
 import com.example.spring_community.Comment.dto.CommentDto;
 import com.example.spring_community.Comment.dto.NewCommentDto;
 import com.example.spring_community.Post.domain.PostEntity;
-import com.example.spring_community.Post.repository.PostRepository;
+import com.example.spring_community.Post.repository.PostJsonRepository;
 import com.example.spring_community.User.domain.Author;
 import com.example.spring_community.Comment.domain.CommentEntity;
 import com.example.spring_community.User.domain.UserEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
-import com.example.spring_community.Comment.repository.CommentRepository;
-import com.example.spring_community.User.repository.UserRepository;
+import com.example.spring_community.Comment.repository.CommentJsonRepository;
+import com.example.spring_community.User.repository.UserJsonRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,11 +18,11 @@ import java.util.List;
 
 @Service
 public class CommentService {
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
+    private final CommentJsonRepository commentRepository;
+    private final UserJsonRepository userRepository;
+    private final PostJsonRepository postRepository;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository) {
+    public CommentService(CommentJsonRepository commentRepository, UserJsonRepository userRepository, PostJsonRepository postRepository) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
@@ -63,7 +63,7 @@ public class CommentService {
     }
 
     public CommentDto updateComment(Long userId, Long commentId, NewCommentDto newCommentDto) {
-        CommentEntity commentEntity = commentRepository.findByCommentId(commentId)
+        CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
         UserEntity commentUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -87,7 +87,7 @@ public class CommentService {
     public void deleteComment(Long userId, Long commentId) {
         UserEntity deleteUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        CommentEntity commentEntity = commentRepository.findByCommentId(commentId)
+        CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
         if (!userId.equals(commentEntity.getAuthor().getUserId())) {
             throw new CustomException(ErrorCode.COMMENT_DELETE_FORBIDDEN_USER);

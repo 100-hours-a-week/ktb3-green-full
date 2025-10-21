@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class JsonRepository<T> {
     private final ObjectMapper objectMapper;
@@ -35,5 +36,9 @@ public abstract class JsonRepository<T> {
             throw new CustomException(ErrorCode.FAIL_TO_ACCESS_DB);
         }
     }
+
+    protected abstract Optional<T> findById(Long Id);
+    protected abstract void loadFromJson();
+    protected abstract void saveToJson();
 
 }

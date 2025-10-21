@@ -10,7 +10,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 public class CreateUserDto {
 
     @NotBlank(message = "이메일을 입력해주세요.")
@@ -32,8 +31,7 @@ public class CreateUserDto {
     @NotBlank(message = "프로필 사진을 추가해주세요.")
     private String profileImg;
 
-    public CreateUserDto() {}
-
+    @Builder
     public CreateUserDto(String email, String password, String checkPassword, String nickname, String profileImg) {
         this.email = email;
         this.password = password;

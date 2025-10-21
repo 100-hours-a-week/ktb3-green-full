@@ -7,12 +7,15 @@ import com.example.spring_community.Exception.dto.DataResponseDto;
 import com.example.spring_community.Exception.dto.ResponseDto;
 import com.example.spring_community.Post.dto.*;
 import com.example.spring_community.Post.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Tag(name="Post API", description = "Post 리소스에 관한 API 입니다.")
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
@@ -21,8 +24,8 @@ public class PostController {
         this.postService = postService;
     }
 
-    //게시글 목록 조회
     @GetMapping
+    @Operation(summary = "게시글 목록 조회", description = "page와 size 쿼리 파라미터를 통해 해당하는 게시글들의 목록을 조회합니다.")
     public ResponseEntity<DataResponseDto<PagePostDto<PostDto>>> loadPostList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         if (page < 0 || size < 1 || size > 50) {
             throw new CustomException(ErrorCode.BAD_REQUEST);
@@ -33,16 +36,16 @@ public class PostController {
                 .body(DataResponseDto.of(HttpStatus.OK, "READ_POSTPAGE_SUCCESS", "게시글 목록 조회에 성공했습니다.", postItems));
     }
 
-    //게시글 상세 조회
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 상세 조회", description = "postId에 해당하는 게시글을 조회합니다.")
     public ResponseEntity<DataResponseDto<DetailPostDto>> loadPost(@PathVariable Long postId) {
         DetailPostDto post = postService.readPost(postId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponseDto.of(HttpStatus.OK, "READ_POST_SUCCESS", "게시글 조회에 성공했습니다.", post));
     }
 
-    //게시글 생성
     @PostMapping
+    @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
     public ResponseEntity<DataResponseDto<PostDto>> createPost(HttpServletRequest request, @RequestBody NewPostDto newPostDto) {
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
         if (authUser == null) {
@@ -53,8 +56,8 @@ public class PostController {
                 .body(DataResponseDto.of(HttpStatus.CREATED, "CREATE_POST_SUCCESS", "성공적으로 게시글을 업로드했습니다.", newPost));
     }
 
-    //게시글 수정
     @PatchMapping("/{postId}")
+    @Operation(summary = "게시글 수정", description = "postId에 해당하는 게시글을 수정합니다.")
     public ResponseEntity<DataResponseDto<NewPostDto>> updatePost(HttpServletRequest request, @PathVariable long postId, @RequestBody UpdatePostDto updatePostDto) {
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
         if (authUser == null) {
@@ -65,8 +68,8 @@ public class PostController {
                 .body(DataResponseDto.of(HttpStatus.OK, "UPDATE_POST_SUCCESS", "성공적으로 게시글을 수정했습니다.", updatedPost));
     }
 
-    //게시글 삭제
     @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제", description = "postId에 해당하는 게시글을 삭제합니다.")
     public ResponseEntity<ResponseDto> deletePost(HttpServletRequest request, @PathVariable long postId) {
         AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
         if (authUser == null) {

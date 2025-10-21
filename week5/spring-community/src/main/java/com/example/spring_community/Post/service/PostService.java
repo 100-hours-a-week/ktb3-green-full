@@ -4,9 +4,11 @@ import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
 import com.example.spring_community.Post.dto.*;
 import com.example.spring_community.Post.domain.PostEntity;
+import com.example.spring_community.Post.repository.PostJsonRepository;
 import com.example.spring_community.Post.repository.PostRepository;
 import com.example.spring_community.User.domain.Author;
 import com.example.spring_community.User.domain.UserEntity;
+import com.example.spring_community.User.repository.UserJsonRepository;
 import com.example.spring_community.User.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostJsonRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
     }
