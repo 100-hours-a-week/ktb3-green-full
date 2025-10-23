@@ -7,3 +7,5 @@
 - week2: CLI 프로그램 제작 + 스레드 (비동기)
 - week3: REST API 설계
 - week4: REST API 개발
+- week5: SOLID 원칙 기반 API 리팩토링
+- week6: ERD 설계
