@@ -1,5 +1,6 @@
 package com.example.spring_community.User.dto;
 
+import com.example.spring_community.User.domain.UserEntity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -38,5 +39,9 @@ public class CreateUserDto {
         this.checkPassword = checkPassword;
         this.nickname = nickname;
         this.profileImg = profileImg;
+    }
+
+    public static CreateUserDto of (UserEntity user) {
+        return new CreateUserDto(user.getEmail(), "hidden", "hidden", user.getNickname(), user.getProfileImg());
     }
 }

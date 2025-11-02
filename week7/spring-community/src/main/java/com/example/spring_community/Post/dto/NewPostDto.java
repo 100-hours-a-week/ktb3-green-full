@@ -1,5 +1,6 @@
 package com.example.spring_community.Post.dto;
 
+import com.example.spring_community.Post.domain.PostEntity;
 import org.springframework.lang.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -23,5 +24,9 @@ public class NewPostDto {
         this.title = title;
         this.content = content;
         this.postImg = postImg;
+    }
+
+    public static NewPostDto of (PostEntity post) {
+        return new NewPostDto(post.getTitle(), post.getContent(), post.getPostImg());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.spring_community.Auth.controller;
 
+import com.example.spring_community.Auth.annotation.AuthUser;
 import com.example.spring_community.Auth.dto.AuthUserDto;
 import com.example.spring_community.Auth.dto.LoginDto;
 import com.example.spring_community.Auth.dto.RefreshTokenDto;
@@ -56,10 +57,8 @@ public class AuthController {
 
     @PostMapping("/token/new")
     @Operation(summary = "토큰 재발급", description = "토큰 정보로 인증된 사용자의 access token을 재발급합니다.")
-    public ResponseEntity<DataResponseDto<TokenDto>> refresh(HttpServletRequest request, @RequestBody RefreshTokenDto refreshTokenDto) {
-        AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        if (authUser == null) throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-        TokenDto refreshedToken = authService.reissueAccessToken(authUser.getUserId(), refreshTokenDto);
+    public ResponseEntity<DataResponseDto<TokenDto>> refresh(@RequestBody RefreshTokenDto refreshTokenDto, @AuthUser AuthUserDto authUserDto) {
+        TokenDto refreshedToken = authService.reissueAccessToken(authUserDto.getUserId(), refreshTokenDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponseDto.of(HttpStatus.OK, "REFRESH_USER_SUCCESS", "정상적으로 토큰이 재발급되었습니다.", refreshedToken));
     }

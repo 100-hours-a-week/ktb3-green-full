@@ -1,5 +1,6 @@
 package com.example.spring_community.Like.dto;
 
+import com.example.spring_community.Post.domain.PostEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,5 +16,13 @@ public class LikeDto {
         this.postId = postId;
         this.title = title;
         this.likes = likes;
+    }
+
+    public static LikeDto of(PostEntity postEntity) {
+        return LikeDto.builder()
+                .postId(postEntity.getPostId())
+                .title(postEntity.getTitle())
+                .likes(postEntity.getPostMetaEntity().getLikeCount())
+                .build();
     }
 }

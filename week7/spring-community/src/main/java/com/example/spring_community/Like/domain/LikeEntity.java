@@ -1,4 +1,4 @@
-package com.example.spring_community.Comment.domain;
+package com.example.spring_community.Like.domain;
 
 import com.example.spring_community.Post.domain.PostEntity;
 import com.example.spring_community.User.domain.UserEntity;
@@ -10,13 +10,13 @@ import java.time.Instant;
 
 @Getter
 @Entity
-@Table(name = "comments")
-public class CommentEntity {
+@Table(name = "likes")
+public class LikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long commentId;
+    private Long likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
@@ -26,29 +26,16 @@ public class CommentEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column(name = "content", nullable = false)
-    private String content;
-
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
-    private Instant updatedAt;
-
-    public CommentEntity() {};
+    public LikeEntity() {};
 
     @Builder(toBuilder = true)
-    public CommentEntity(Long commentId, PostEntity post, UserEntity user, String content, Instant createdAt, Instant updatedAt) {
-        this.commentId = commentId;
+    public LikeEntity(Long likeId, PostEntity post, UserEntity user, Instant createdAt) {
+        this.likeId = likeId;
         this.post = post;
         this.user = user;
-        this.content = content;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
 }

@@ -1,47 +1,63 @@
 package com.example.spring_community.Post.domain;
 
-import com.example.spring_community.User.domain.Author;
+import com.example.spring_community.User.domain.UserEntity;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+
 import java.time.Instant;
-import java.util.Comparator;
 
 @Getter
-@Setter
-public class PostEntity implements Comparable<PostEntity> {
+@Entity
+@Table(name = "posts")
+public class PostEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long postId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private UserEntity user;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "content", nullable = false)
     private String content;
+
+    @Column(name = "image_url")
     private String postImg;
-    private Author author;
-    private Integer likes;
-    private Integer views;
-    private Integer comments;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
     private Instant updatedAt;
 
+    @OneToOne(mappedBy = "post")
+    private PostMetaEntity postMetaEntity;
+
+
+    protected PostEntity() {}
+
     @Builder(toBuilder = true)
-    public PostEntity(Long postId, String title, String content, String postImg, Author author,
-                      Integer likes, Integer views, Integer comments, Instant createdAt, Instant updatedAt) {
+    public PostEntity(Long postId, UserEntity user, String title, String content, String postImg, Instant createdAt, Instant updatedAt, PostMetaEntity postMetaEntity) {
         this.postId = postId;
+        this.user = user;
         this.title = title;
         this.content = content;
         this.postImg = postImg;
-        this.author = author;
-        this.likes = likes;
-        this.views = views;
-        this.comments = comments;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.postMetaEntity = postMetaEntity;
     }
 
-    @Override
-    public int compareTo(PostEntity post) {
-        return Comparator.comparing(PostEntity::getCreatedAt,
-                        Comparator.nullsLast(Instant::compareTo))
-                .thenComparing(PostEntity::getPostId,
-                        Comparator.nullsLast(Long::compareTo)).reversed().compare(this, post);
-
+    public void initMetaIfAbsent() {
+        if (this.postMetaEntity == null) {
+            this.postMetaEntity = PostMetaEntity.of(this);
+        }
     }
+
 }

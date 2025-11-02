@@ -1,5 +1,6 @@
 package com.example.spring_community.Comment.dto;
 
+import com.example.spring_community.Comment.domain.CommentEntity;
 import com.example.spring_community.User.domain.Author;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,11 @@ public class CommentDto {
         this.author = author;
         this.content = content;
         this.updatedAt = updatedAt;
+    }
+
+    public static CommentDto of (CommentEntity commentEntity) {
+        Author author = new Author(commentEntity.getUser().getUserId(), commentEntity.getUser().getNickname());
+        return new CommentDto(author, commentEntity.getContent(), commentEntity.getUpdatedAt());
     }
 }
 

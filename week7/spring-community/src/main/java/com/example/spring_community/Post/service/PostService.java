@@ -2,16 +2,18 @@ package com.example.spring_community.Post.service;
 
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
+import com.example.spring_community.Post.domain.PostMetaEntity;
 import com.example.spring_community.Post.dto.*;
 import com.example.spring_community.Post.domain.PostEntity;
-import com.example.spring_community.Post.repository.PostJsonRepository;
+import com.example.spring_community.Post.repository.PostMetaRepository;
 import com.example.spring_community.Post.repository.PostRepository;
-import com.example.spring_community.User.domain.Author;
 import com.example.spring_community.User.domain.UserEntity;
 import com.example.spring_community.User.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,48 +21,57 @@ import java.util.Optional;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostMetaRepository postMetaRepository;
 
-    public PostService(PostJsonRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, PostMetaRepository postMetaRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.postMetaRepository = postMetaRepository;
     }
 
+    @Transactional(readOnly = true)
     public DetailPostDto readPost(Long postId) {
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        return entityToDetailDto(postEntity);
+        return DetailPostDto.of(postEntity, postEntity.getPostMetaEntity());
     }
 
-    public PagePostDto<PostDto> readPostPage(int page, int size) {
-        List<PostEntity> postPageList = postRepository.findPostPage(page, size);
-        int totalPosts = postRepository.countAllPosts();
-        List<PostDto> postPageItems = postPageList.stream().map(this::entityToDto).toList();
-        return PagePostDto.of(postPageItems, page, size, totalPosts);
+    @Transactional(readOnly = true)
+    public Page<PostDto> readPostPage(Pageable pageable) {
+        return postRepository.findAllByOrderByCreatedAtDescPostIdDesc(pageable).map(PostDto::from);
     }
 
-    public PostDto createPost(Long userId, NewPostDto newPostDto) {
+    @Transactional
+    public NewPostDto createPost(Long userId, NewPostDto newPostDto) {
+
         UserEntity postUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Author postAuthor = new Author(userId, postUser.getNickname());
-        Instant now = Instant.now();
+
         PostEntity newPostEntity = PostEntity.builder()
                 .title(newPostDto.getTitle())
                 .content(newPostDto.getContent())
                 .postImg(newPostDto.getPostImg())
-                .author(postAuthor)
-                .likes(0).views(0).comments(0)
-                .createdAt(now).updatedAt(now).build();
-        PostEntity createdPostEntity = postRepository.createPost(newPostEntity);
-        return entityToDto(createdPostEntity);
+                .user(postUser)
+                .build();
+
+        postRepository.save(newPostEntity);
+
+        PostMetaEntity meta = PostMetaEntity.of(newPostEntity); // 2) 공유 PK로 메타 생성 (like/view/comment = 0)
+        postMetaRepository.save(meta);
+
+        return NewPostDto.of(newPostEntity);
     }
 
+    @Transactional
     public NewPostDto updatePost(Long userId, Long postId, UpdatePostDto updatePostDto) {
+
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        if (!userId.equals(postEntity.getAuthor().getUserId())) {
+
+        if (!userId.equals(postEntity.getUser().getUserId())) {
             throw new CustomException(ErrorCode.POST_UPDATE_FORBIDDEN_USER);
         }
-        Instant now = Instant.now();
+
 
         String updateTitle = Optional.ofNullable(updatePostDto.getTitle())
                 .map(String::trim).filter(s -> !s.isEmpty()).orElse(postEntity.getTitle());
@@ -74,47 +85,27 @@ public class PostService {
         PostEntity newPostEntity = postEntity.toBuilder()
                 .title(updateTitle)
                 .content(updateContent)
-                .postImg(updatePostImg)
-                .updatedAt(now).build();
+                .postImg(updatePostImg).build();
 
-        PostEntity updatedPost = postRepository.updatePost(newPostEntity);
-        NewPostDto updatedPostDto = NewPostDto.builder()
-                .title(updatedPost.getTitle())
-                .content(updatedPost.getContent())
-                .postImg(updatedPost.getPostImg()).build();
-        return updatedPostDto;
+        postRepository.save(newPostEntity);
+
+        return NewPostDto.of(newPostEntity);
     }
 
+    @Transactional
     public void deletePost(Long userId, Long postId) {
+
         UserEntity deleteUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        if (!userId.equals(postEntity.getAuthor().getUserId())) {
+
+        if (!userId.equals(postEntity.getUser().getUserId())) {
             throw new CustomException(ErrorCode.POST_DELETE_FORBIDDEN_USER);
         }
-        postRepository.deleteByPostId(postId);
+
+        postRepository.deleteById(postId);
     }
 
-    public PostDto entityToDto(PostEntity postEntity) {
-        return PostDto.builder()
-                .postId(postEntity.getPostId())
-                .title(postEntity.getTitle())
-                .author(postEntity.getAuthor())
-                .likes(postEntity.getLikes()).views(postEntity.getViews()).comments(postEntity.getComments())
-                .createdAt(postEntity.getCreatedAt()).updatedAt(postEntity.getUpdatedAt())
-                .build();
-    }
-
-    public DetailPostDto entityToDetailDto(PostEntity postEntity) {
-        return DetailPostDto.builder()
-                .postId(postEntity.getPostId())
-                .title(postEntity.getTitle())
-                .content(postEntity.getContent())
-                .postImg(postEntity.getPostImg())
-                .author(postEntity.getAuthor())
-                .likes(postEntity.getLikes()).views(postEntity.getViews()).comments(postEntity.getComments())
-                .createdAt(postEntity.getCreatedAt()).updatedAt(postEntity.getUpdatedAt())
-                .build();
-    }
 }

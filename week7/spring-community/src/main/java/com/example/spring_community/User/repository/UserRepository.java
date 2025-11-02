@@ -1,11 +1,11 @@
 package com.example.spring_community.User.repository;
 
 import com.example.spring_community.User.domain.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.Optional;
 
-public interface UserRepository {
-    public UserEntity createNewUser(UserEntity userEntity);
-    public UserEntity updateUserInfo(UserEntity userEntity);
-    public Optional<UserEntity> findById(Long userId);
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
     public Optional<UserEntity> findByEmail(String email);
+    public Boolean existsByEmail(String email);
 }

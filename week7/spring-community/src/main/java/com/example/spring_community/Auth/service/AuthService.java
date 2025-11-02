@@ -7,16 +7,19 @@ import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
 import com.example.spring_community.Auth.jwt.JwtUtils;
 import com.example.spring_community.Auth.dto.LoginDto;
-import com.example.spring_community.User.repository.UserJsonRepository;
+import com.example.spring_community.User.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    private final UserJsonRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-    public AuthService(UserJsonRepository userRepository, JwtUtils jwtUtils) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
     }
     public TokenDto login(LoginDto loginDto) {
@@ -34,22 +37,26 @@ public class AuthService {
         if(!jwtUtils.verifyToken(refreshTokenDto.getRefreshToken())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_TOKEN);
         }
+
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         String newAccessToken = jwtUtils.createAccessToken(userEntity);
-        TokenDto newTokenDto = TokenDto.builder()
+
+        return TokenDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshTokenDto.getRefreshToken())
                 .build();
-        return newTokenDto;
     }
 
     public UserEntity findValidUser(LoginDto loginDto) {
         UserEntity userEntity = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if (!userEntity.getPassword().equals(loginDto.getPassword()) || !userEntity.getActive()) {
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), userEntity.getPassword()) || !userEntity.getActive()) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
         }
+
         return userEntity;
     }
 }

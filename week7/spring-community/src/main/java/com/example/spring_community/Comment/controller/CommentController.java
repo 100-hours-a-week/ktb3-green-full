@@ -1,5 +1,6 @@
 package com.example.spring_community.Comment.controller;
 
+import com.example.spring_community.Auth.annotation.AuthUser;
 import com.example.spring_community.Auth.dto.AuthUserDto;
 import com.example.spring_community.Comment.dto.CommentDto;
 import com.example.spring_community.Comment.dto.NewCommentDto;
@@ -38,39 +39,27 @@ public class CommentController {
 
     @PostMapping
     @Operation(summary = "댓글 생성", description = "postId에 해당하는 게시글에 대한 댓글을 생성합니다.")
-    public ResponseEntity<DataResponseDto<CommentDto>> createComment(HttpServletRequest request, @PathVariable Long postId, @RequestBody NewCommentDto newCommentDto) {
+    public ResponseEntity<DataResponseDto<CommentDto>> createComment(@PathVariable Long postId, @RequestBody NewCommentDto newCommentDto, @AuthUser AuthUserDto authUserDto) {
         commentService.isValidPost(postId);
-        AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        if (authUser == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
-        CommentDto newComment = commentService.createComment(authUser.getUserId(), postId, newCommentDto);
+        CommentDto newComment = commentService.createComment(authUserDto.getUserId(), postId, newCommentDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(DataResponseDto.of(HttpStatus.CREATED, "CREATE_COMMENT_SUCCESS", "성공적으로 댓글을 업로드했습니다.", newComment));
     }
 
     @PatchMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "postId에 해당하는 게시글에 대한 commentId의 댓글을 수정합니다.")
-    public ResponseEntity<DataResponseDto<CommentDto>> updatePost(HttpServletRequest request, @PathVariable long postId,@PathVariable long commentId, @RequestBody NewCommentDto updateCommentDto) {
+    public ResponseEntity<DataResponseDto<CommentDto>> updatePost(@PathVariable long postId,@PathVariable long commentId, @RequestBody NewCommentDto updateCommentDto, @AuthUser AuthUserDto authUserDto) {
         commentService.isValidPost(postId);
-        AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        if (authUser == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
-        CommentDto updatedComment = commentService.updateComment(authUser.getUserId(), commentId, updateCommentDto);
+        CommentDto updatedComment = commentService.updateComment(authUserDto.getUserId(), postId, commentId, updateCommentDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(DataResponseDto.of(HttpStatus.OK, "UPDATE_COMMENT_SUCCESS", "성공적으로 댓글을 수정했습니다.", updatedComment));
     }
 
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "postId에 해당하는 게시글에 대한 commentId의 댓글을 삭제합니다.")
-    public ResponseEntity<ResponseDto> deletePost(HttpServletRequest request, @PathVariable long postId, @PathVariable long commentId) {
+    public ResponseEntity<ResponseDto> deletePost(@PathVariable long postId, @PathVariable long commentId, @AuthUser AuthUserDto authUserDto) {
         commentService.isValidPost(postId);
-        AuthUserDto authUser = (AuthUserDto) request.getAttribute("authUser");
-        if (authUser == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-        }
-        commentService.deleteComment(authUser.getUserId(), commentId);
+        commentService.deleteComment(authUserDto.getUserId(), postId, commentId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.of(HttpStatus.OK, "DELETE_COMMENT_SUCCESS", "성공적으로 댓글을 삭제했습니다."));
     }

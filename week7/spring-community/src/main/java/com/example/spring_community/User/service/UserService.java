@@ -7,6 +7,8 @@ import com.example.spring_community.User.domain.UserEntity;
 import com.example.spring_community.Exception.CustomException;
 import com.example.spring_community.Exception.ErrorCode;
 import com.example.spring_community.User.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,11 +16,14 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public CreateUserDto updateUserProfile(Long userId, UpdateUserProfileDto updateUserProfileDto) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -33,62 +38,58 @@ public class UserService {
                 .filter(s -> !s.isEmpty())
                 .orElse(userEntity.getProfileImg());
 
-        UserEntity updatedUser = userRepository.updateUserInfo(userEntity.toBuilder()
-                .nickname(newNickname).profileImg(newProfileImg).build());
+        userEntity.setNickname(newNickname);
+        userEntity.setProfileImg(newProfileImg);
 
-        CreateUserDto updatedUserDto = CreateUserDto.builder()
-                .email(updatedUser.getEmail())
-                .password(null)
-                .checkPassword(null)
-                .nickname(updatedUser.getNickname())
-                .profileImg(updatedUser.getProfileImg()).build();
-
-        return updatedUserDto;
+        return CreateUserDto.of(userEntity);
     }
 
+    @Transactional
     public void updateUserPw(Long userId, UpdateUserPwDto updateUserPwDto) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         if (userEntity.getPassword().equals(updateUserPwDto.getPassword())) {
             throw new CustomException(ErrorCode.DUPLICATED_PASSWORD);
         }
-        userRepository.updateUserInfo(userEntity.toBuilder()
-                .password(updateUserPwDto.getPassword()).build());
+
+        userEntity.setPassword(userEntity.getPassword());
     }
 
+    @Transactional
     public CreateUserDto signup(CreateUserDto createUserDto) {
         if (!createUserDto.getPassword().equals(createUserDto.getCheckPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
-        if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
+        if (userRepository.existsByEmail(createUserDto.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATED_USER);
         }
+
+        String encodedPassword = passwordEncoder.encode(createUserDto.getPassword());
         UserEntity userEntity = UserEntity.builder()
                 .email(createUserDto.getEmail())
-                .password(createUserDto.getPassword())
+                .password(encodedPassword)
                 .nickname(createUserDto.getNickname())
                 .profileImg(createUserDto.getProfileImg())
                 .active(true)
                 .build();
-        UserEntity createdUser = userRepository.createNewUser(userEntity);
-        CreateUserDto createdUserDto = CreateUserDto.builder()
-                .email(createdUser.getEmail())
-                .password(null)
-                .checkPassword(null)
-                .nickname(createdUser.getNickname())
-                .profileImg(createdUser.getProfileImg()).build();
-        return createdUserDto;
+
+        userRepository.save(userEntity);
+
+        return CreateUserDto.of(userEntity);
     }
 
+    @Transactional
     public void withdrawUser(Long userId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         if (!userEntity.getActive()) {
             throw new CustomException(ErrorCode.DUPLICATED_WITHDRAW);
         }
-        UserEntity updateUserActiveEntity = userEntity.toBuilder().active(false).build();
-        userRepository.updateUserInfo(updateUserActiveEntity);
+
+        userEntity.setActive(false);
     }
 
 }

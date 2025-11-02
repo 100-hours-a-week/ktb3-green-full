@@ -1,5 +1,6 @@
 package com.example.spring_community.Post.dto;
 
+import com.example.spring_community.Post.domain.PostEntity;
 import com.example.spring_community.User.domain.Author;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,20 @@ public class PostDto {
         this.comments = comments;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public static PostDto from(PostEntity post) {
+        Author author = new Author(post.getUser().getUserId(), post.getUser().getNickname());
+        return PostDto.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .author(author)
+                .likes(post.getPostMetaEntity().getLikeCount())
+                .views(post.getPostMetaEntity().getViewCount())
+                .comments(post.getPostMetaEntity().getCommentCount())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .build();
     }
 
 }
